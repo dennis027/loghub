@@ -1,0 +1,71 @@
+# Render Blueprint: Django API (with embedded Celery worker + beat), PostgreSQL and Redis.
+# The Angular console is hosted separately on GitHub Pages (see .github/workflows/pages.yml).
+# Elasticsearch/Logstash/Graylog are not part of this blueprint; set ELASTICSEARCH_* in the
+# dashboard to a hosted cluster to enable log search. See docs/deployment.md.
+databases:
+  - name: loghub-db
+    databaseName: loghub
+    user: loghub
+    plan: free
+
+services:
+  - type: keyvalue
+    name: loghub-redis
+    plan: free
+    maxmemoryPolicy: noeviction
+    ipAllowList: []   # internal connections only
+
+  - type: web
+    name: loghub-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    dockerCommand: sh /app/docker-entrypoint.sh render
+    plan: free
+    healthCheckPath: /health/live
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_SUPERUSER_PASSWORD
+        generateValue: true
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: admin
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: admin@example.com
+      - key: DEBUG
+        value: "false"
+      - key: SECURE_COOKIES
+        value: "true"
+      # Render injects RENDER_EXTERNAL_HOSTNAME; the .onrender.com entry covers custom service names.
+      - key: ALLOWED_HOSTS
+        value: .onrender.com,localhost
+      # Set to your GitHub Pages origin, e.g. https://<user>.github.io (no path, no trailing slash).
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false   # the GitHub Pages URL including the repo path
+      - key: POSTGRES_HOST
+        fromDatabase: { name: loghub-db, property: host }
+      - key: POSTGRES_PORT
+        fromDatabase: { name: loghub-db, property: port }
+      - key: POSTGRES_DB
+        fromDatabase: { name: loghub-db, property: database }
+      - key: POSTGRES_USER
+        fromDatabase: { name: loghub-db, property: user }
+      - key: POSTGRES_PASSWORD
+        fromDatabase: { name: loghub-db, property: password }
+      - key: REDIS_URL
+        fromService: { type: keyvalue, name: loghub-redis, property: connectionString }
+      # Optional: hosted Elasticsearch (Elastic Cloud, Bonsai, ...). Leave empty to run without search.
+      - key: ELASTICSEARCH_URL
+        sync: false
+      - key: ELASTICSEARCH_USERNAME
+        sync: false
+      - key: ELASTICSEARCH_PASSWORD
+        sync: false
+      - key: GUNICORN_WORKERS
+        value: "1"
+      - key: GUNICORN_THREADS
+        value: "4"
