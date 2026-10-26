@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import timedelta
 from pathlib import Path
 
@@ -27,6 +28,10 @@ if not SECRET_KEY:
 ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1,django-api')
 CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS', 'http://localhost:4200')
 PUBLIC_BASE_URL = env('PUBLIC_BASE_URL', 'http://localhost:4200')
+# Origins allowed to call the API from a browser when the console is hosted separately
+# (e.g. https://<user>.github.io). Auth is a bearer token, so no cookies cross origins.
+CORS_ALLOWED_ORIGINS = env_list('CORS_ALLOWED_ORIGINS')
+CORS_EXPOSE_HEADERS = ['Content-Disposition', 'X-Request-ID']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -35,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'drf_spectacular',
@@ -56,6 +62,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'core.middleware.RequestIdMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -100,6 +108,8 @@ DATABASES = {
 }
 
 REDIS_URL = env('REDIS_URL', 'redis://localhost:6379/0')
+if not re.search(r'/\d+$', REDIS_URL):  # managed Redis URLs often omit the database number
+    REDIS_URL = REDIS_URL.rstrip('/') + '/0'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
@@ -125,6 +135,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
+if env_bool('TESTING'):
+    STORAGES['staticfiles'] = {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'}
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ---- security --------------------------------------------------------------

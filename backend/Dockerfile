@@ -14,7 +14,7 @@ RUN pip install -r requirements.txt \
 
 RUN groupadd --system app && useradd --system --gid app --home /app app
 COPY --chown=app:app . .
-RUN chmod +x /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh && DJANGO_SECRET_KEY=build-only python manage.py collectstatic --noinput
 
 USER app
 EXPOSE 8000
