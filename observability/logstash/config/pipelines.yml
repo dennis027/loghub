@@ -1,0 +1,11 @@
+- pipeline.id: main
+  path.config: "/usr/share/logstash/pipeline/main.conf"
+  pipeline.workers: 2
+  pipeline.batch.size: 250
+
+# Replays documents Elasticsearch rejected from "main" (see dlq.conf).
+- pipeline.id: dlq
+  path.config: "/usr/share/logstash/pipeline/dlq.conf"
+  pipeline.workers: 1
+  dead_letter_queue.enable: false
+  queue.type: memory

@@ -1,0 +1,61 @@
+{
+  "index_patterns": ["logs-loghub-*"],
+  "data_stream": {},
+  "priority": 250,
+  "_meta": {"managed_by": "loghub", "description": "LogHub normalized log events; one data stream per organization"},
+  "template": {
+    "settings": {
+      "index.lifecycle.name": "loghub-logs",
+      "index.number_of_shards": 1,
+      "index.number_of_replicas": 0,
+      "index.mapping.total_fields.limit": 2000,
+      "index.mapping.ignore_malformed": true,
+      "index.refresh_interval": "2s",
+      "index.query.default_field": ["message", "service", "hostname", "container", "event_type", "logger"]
+    },
+    "mappings": {
+      "dynamic": true,
+      "dynamic_templates": [
+        {"strings_as_keyword": {"match_mapping_type": "string",
+                                "mapping": {"type": "keyword", "ignore_above": 1024}}}
+      ],
+      "properties": {
+        "@timestamp": {"type": "date"},
+        "message": {"type": "text", "fields": {"keyword": {"type": "keyword", "ignore_above": 512}}},
+        "level": {"type": "keyword"},
+        "service": {"type": "keyword"},
+        "environment": {"type": "keyword"},
+        "hostname": {"type": "keyword"},
+        "container": {"type": "keyword"},
+        "organization": {"type": "keyword"},
+        "source_id": {"type": "keyword"},
+        "source_type": {"type": "keyword"},
+        "collector": {"type": "keyword"},
+        "log_route": {"type": "keyword"},
+        "event_type": {"type": "keyword"},
+        "logger": {"type": "keyword"},
+        "user": {"type": "keyword"},
+        "client_ip": {"type": "ip"},
+        "trace_id": {"type": "keyword"},
+        "span_id": {"type": "keyword"},
+        "fingerprint": {"type": "keyword"},
+        "demo": {"type": "boolean"},
+        "tags": {"type": "keyword"},
+        "ingested_at": {"type": "date"},
+        "http": {"properties": {
+          "method": {"type": "keyword"},
+          "path": {"type": "keyword"},
+          "status": {"type": "integer"},
+          "duration_ms": {"type": "float"},
+          "bytes": {"type": "long"},
+          "user_agent": {"type": "keyword", "ignore_above": 512}
+        }},
+        "error": {"properties": {
+          "type": {"type": "keyword"},
+          "stack_trace": {"type": "text"}
+        }},
+        "raw": {"type": "text", "index": false}
+      }
+    }
+  }
+}

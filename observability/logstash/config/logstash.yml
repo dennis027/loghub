@@ -1,0 +1,16 @@
+api.http.host: "0.0.0.0"
+api.http.port: 9600
+log.format: json
+pipeline.ecs_compatibility: disabled
+xpack.monitoring.enabled: false
+
+# Persisted queue: absorbs bursts and applies backpressure to Fluent Bit (which
+# buffers to disk in turn) when Elasticsearch is slow or unavailable.
+queue.type: persisted
+queue.max_bytes: 512mb
+queue.checkpoint.writes: 1024
+
+# Documents Elasticsearch rejects (mapping conflicts, 400s) land here instead of
+# being dropped; size is reported in the LogHub "Log Pipelines" page.
+dead_letter_queue.enable: true
+dead_letter_queue.max_bytes: 256mb
