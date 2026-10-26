@@ -80,3 +80,4 @@ make test-integration   # end-to-end through the running pipeline
 | Frontend | Angular 18 (standalone, signals), Angular Material, ECharts |
 | Data plane | Elasticsearch/Logstash/Kibana 8.15.3, Fluent Bit 3.1.9, Grafana 11.2.2, Graylog 6.1.4 + OpenSearch 2.15.0 + MongoDB 7.0, Prometheus 2.54 |
 | Quality | 97 backend unit tests + 2 end-to-end tests, 14 frontend tests, Ruff, angular-eslint (incl. accessibility), ShellCheck, GitHub Actions CI |
+# loghub
