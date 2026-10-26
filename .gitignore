@@ -1,0 +1,27 @@
+# Secrets and local state
+.env
+.env.*
+!.env.example
+backups/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+backend/staticfiles/
+*.sqlite3
+
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.log
+.ruff_cache/
