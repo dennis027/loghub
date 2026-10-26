@@ -1,0 +1,42 @@
+[project]
+name = "loghub-api"
+version = "1.0.0"
+description = "LogHub management API (Django + DRF + Celery)"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # import sorting
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "DJ",       # django
+    "S",        # bandit (security)
+    "SIM",      # simplifications
+    "RUF100",   # unused noqa
+]
+ignore = [
+    "DJ001",    # null=True on CharField is not used; rule is noisy for JSON/text defaults
+    "DJ012",    # model method ordering: Meta-first is this codebase's convention
+    "S101",     # assert is fine in tests
+    "S311",     # random is used for synthetic demo data, not security
+    "UP038",    # deprecated upstream: X | Y in isinstance is slower than a tuple
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]          # fixture passwords
+"demo/*" = ["S310", "S608"]           # posts to a configured collector URL; SQL text is a log message
+"config/settings.py" = ["S105"]       # dev-only fallback key, refused when DEBUG is off
+
+[tool.ruff.lint.isort]
+known-first-party = ["accounts", "alerts", "audit", "config", "core", "dashboards", "health", "integrations",
+                     "log_sources", "notifications", "organizations", "reports", "retention", "search", "tests"]
+
+[tool.ruff.format]
+quote-style = "single"
