@@ -255,6 +255,7 @@ Conventions and extension points are in [docs/development.md](docs/development.m
 | [Architecture](docs/architecture.md) | Data flow, component ownership, event schema, design decisions, delivery semantics, known limitations |
 | [User guide](docs/user-guide.md) | Ingesting, registering sources, searching, dashboards, alerts, retention, reports, roles, API |
 | [Operations](docs/operations.md) | Configuration, resource sizing, backup/restore, scheduled jobs, troubleshooting, production deployment |
+| [Deployment](docs/deployment.md) | Hosting the API on Render and the console on GitHub Pages |
 | [Security](docs/security.md) | Credentials and least privilege, network exposure, masking, query safety, hardening checklist |
 | [Development](docs/development.md) | Workflow, quality gates, conventions, extension points, repository layout |
 
