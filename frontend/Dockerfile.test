@@ -1,0 +1,9 @@
+# Headless test runner: docker build -f Dockerfile.test -t loghub/frontend-test . && docker run --rm loghub/frontend-test
+FROM node:22.11.0-alpine
+RUN apk add --no-cache chromium
+ENV CHROME_BIN=/usr/bin/chromium-browser NG_CLI_ANALYTICS=false
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+CMD ["npx", "ng", "test", "--watch=false", "--browsers=ChromeHeadlessCI"]
