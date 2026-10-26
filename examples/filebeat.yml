@@ -1,0 +1,13 @@
+# Filebeat -> LogHub Logstash beats input (port 5044). Events land in the
+# collector's default organization (COLLECTOR_DEFAULT_ORG).
+filebeat.inputs:
+  - type: filestream
+    id: app-logs
+    paths: ["/var/log/myapp/*.log"]
+    fields_under_root: true
+    fields:
+      service: myapp
+      environment: production
+
+output.logstash:
+  hosts: ["<collector-host>:5044"]
