@@ -12,6 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { catchError, filter, forkJoin, map, of, startWith, switchMap, timer } from 'rxjs';
 import { ApiService } from '../core/api.service';
+import { apiUrl } from '../core/api-base';
 import { AuthService } from '../core/auth.service';
 import { Role } from '../core/models';
 import { ThemeService } from '../core/theme.service';
@@ -103,7 +104,7 @@ const COLLAPSE_KEY = 'loghub.nav.collapsed';
               <span class="role-pill">{{ auth.user()?.role }}</span> · {{ auth.user()?.organization?.name }}</div>
             <mat-divider />
             <a mat-menu-item routerLink="/settings"><mat-icon>settings</mat-icon>Settings</a>
-            <a mat-menu-item href="/api/docs/" target="_blank" rel="noopener"><mat-icon>api</mat-icon>API docs</a>
+            <a mat-menu-item [href]="apiDocsUrl" target="_blank" rel="noopener"><mat-icon>api</mat-icon>API docs</a>
             <button mat-menu-item (click)="auth.logout()"><mat-icon>logout</mat-icon>Sign out</button>
           </mat-menu>
         </mat-toolbar>
@@ -115,6 +116,7 @@ const COLLAPSE_KEY = 'loghub.nav.collapsed';
 export class ShellComponent {
   @ViewChild('search') searchInput?: ElementRef<HTMLInputElement>;
   auth = inject(AuthService);
+  readonly apiDocsUrl = apiUrl('/api/docs/');
   theme = inject(ThemeService);
   private api = inject(ApiService);
   private router = inject(Router);

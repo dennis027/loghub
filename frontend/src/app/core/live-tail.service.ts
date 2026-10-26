@@ -1,5 +1,6 @@
 import { Injectable, NgZone, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { apiUrl } from './api-base';
 import { queryParams } from './api.service';
 import { AuthService } from './auth.service';
 import { LogHit, LogQueryParams } from './models';
@@ -34,12 +35,12 @@ export class LiveTailService {
           try {
             let token = this.auth.accessToken;
             const params = queryParams({ ...query, ...(lastId ? { after: lastId } : {}) } as never);
-            let resp = await fetch(`/api/logs/live/?${params.toString()}`, {
+            let resp = await fetch(apiUrl(`/api/logs/live/?${params.toString()}`), {
               headers: { Authorization: `Bearer ${token}`, Accept: 'text/event-stream' }, signal: abort.signal,
             });
             if (resp.status === 401) {
               token = await new Promise<string>((res, rej) => this.auth.refresh().subscribe({ next: res, error: rej }));
-              resp = await fetch(`/api/logs/live/?${params.toString()}`, {
+              resp = await fetch(apiUrl(`/api/logs/live/?${params.toString()}`), {
                 headers: { Authorization: `Bearer ${token}`, Accept: 'text/event-stream' }, signal: abort.signal,
               });
             }

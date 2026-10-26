@@ -10,6 +10,7 @@ import { GridComponent, LegendComponent, TooltipComponent, DataZoomComponent } f
 import { CanvasRenderer } from 'echarts/renderers';
 
 import { routes } from './app.routes';
+import { apiBaseInterceptor } from './core/api-base';
 import { authInterceptor } from './core/auth.interceptor';
 
 echarts.use([BarChart, LineChart, PieChart, GridComponent, LegendComponent, TooltipComponent, DataZoomComponent,
@@ -19,7 +20,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, apiBaseInterceptor])),
     provideAnimationsAsync(),
     provideEchartsCore({ echarts }),
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline', subscriptSizing: 'dynamic' } },
